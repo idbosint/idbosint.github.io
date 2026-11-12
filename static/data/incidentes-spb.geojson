@@ -1,0 +1,44 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [30.3351, 59.9311]
+      },
+      "properties": {
+        "titulo": "Stalking on Nevsky Prospekt",
+        "fecha": "14.03.2024",
+        "severidad": "alta",
+        "descripcion": "A group of three men followed the victim for 400 m along Nevsky Prospekt, between the Gostiny Dvor and Nevsky Prospekt stops, making comments and filming with a phone."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [30.3615, 59.9294]
+      },
+      "properties": {
+        "titulo": "Intimidation in the Moskovsky station concourse",
+        "fecha": "02.06.2024",
+        "severidad": "media",
+        "descripcion": "Two individuals blocked a woman's path next to the suburban ticket counters and demanded her phone number. Security staff intervened after several minutes."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [30.2760, 59.9386]
+      },
+      "properties": {
+        "titulo": "Hostile comments on Vasilyevsky Island",
+        "fecha": "21.09.2024",
+        "severidad": "baja",
+        "descripcion": "Sexual comments directed at a student in the university park next to the Vasileostrovskaya (line 1) station. No physical assault; the incident was logged to document the pattern."
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "fuente": "https://data.source.coop/protomaps/openstreetmap/v4.pmtiles",
+  "maxzoom": 15,
+  "mapas": [
+    {
+      "nombre": "spb",
+      "bbox": [30.10, 59.80, 30.60, 60.10],
+      "salida": "static/tiles/spb.pmtiles"
+    }
+  ]
+}

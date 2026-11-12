@@ -1,0 +1,17 @@
+{{ define "main" }}
+<main>
+    {{ if or .Title .Content }}
+    <div class="flex-column">
+        {{ with .Title }}<h1>{{ . }}</h1>{{ end }}
+        {{ with .Content }}<div>{{ . }}</div>{{ end }}
+    </div>
+    {{ end }}
+
+    {{ range (.Paginator 5).Pages }}
+    {{ .Render "summary" }}
+    {{ end }}
+    {{ if ge .Paginator.NumberOfElements 1 }}
+    {{ partial "pagination.html" . }}
+    {{ end }}
+</main>
+{{ end }}

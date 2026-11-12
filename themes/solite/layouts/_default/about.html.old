@@ -1,0 +1,5 @@
+{{ define "main" }}
+<main>
+    {{ partial "article" . }}
+</main>
+{{ end }}

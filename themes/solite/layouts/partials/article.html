@@ -1,0 +1,14 @@
+    <article>
+      <header>
+        <h1>{{ .Title }}</h1>
+        <p>
+        {{ if .Date | default false }}
+        <time>{{ .Date.Format "02.01.2006" }}</time>
+        {{ end }}
+	{{ range .Params.tags }}
+	<a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>
+	{{ end }}
+        </p>
+      </header>
+      {{ .Content }}
+    </article>

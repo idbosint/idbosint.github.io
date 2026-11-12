@@ -1,0 +1,64 @@
+{{- /*
+  Shortcode contenedor: pestañas de idioma para UN post.
+    {{< idiomas defecto="es" >}}
+      {{< idioma es "Español" >}}...{{< /idioma >}}
+      {{< idioma ru "Русский" >}}...{{< /idioma >}}
+    {{< /idiomas >}}
+  Todo el texto va en el HTML generado (nada de APIs de traducción).
+  Sin JS se ven los dos bloques, cada uno con su título; con JS se convierten
+  en pestañas y solo queda visible el idioma por defecto.
+*/ -}}
+{{- $defecto := .Get "defecto" | default "es" -}}
+<div class="idiomas" data-defecto="{{ $defecto }}">
+  <div class="idiomas__tabs" role="tablist" aria-label="Idioma del contenido"></div>
+  <div class="idiomas__paneles">
+{{ .Inner }}
+  </div>
+  <noscript>
+    <p class="idiomas__aviso">Sin JavaScript se muestran los dos idiomas seguidos.</p>
+  </noscript>
+  <script>
+  (function () {
+    'use strict';
+    var raiz = document.currentScript.parentElement;
+    var paneles = raiz.querySelectorAll('.idioma');
+    var tabs = raiz.querySelector('.idiomas__tabs');
+    var defecto = raiz.getAttribute('data-defecto');
+    var botones = [];
+    if (!paneles.length || !tabs) { return; }
+
+    function activar(codigo) {
+      for (var i = 0; i < paneles.length; i++) {
+        var p = paneles[i];
+        var titulo = p.querySelector('.idioma__titulo');
+        if (titulo) { titulo.setAttribute('hidden', ''); }
+        if (p.getAttribute('data-idioma') === codigo) {
+          p.removeAttribute('hidden');
+        } else {
+          p.setAttribute('hidden', '');
+        }
+      }
+      for (var j = 0; j < botones.length; j++) {
+        botones[j].setAttribute('aria-selected', botones[j].getAttribute('data-idioma') === codigo ? 'true' : 'false');
+      }
+    }
+
+    for (var i = 0; i < paneles.length; i++) {
+      (function (panel) {
+        var codigo = panel.getAttribute('data-idioma');
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'idiomas__tab';
+        b.setAttribute('role', 'tab');
+        b.setAttribute('data-idioma', codigo);
+        b.textContent = panel.getAttribute('data-etiqueta') || codigo;
+        b.addEventListener('click', function () { activar(codigo); });
+        tabs.appendChild(b);
+        botones.push(b);
+      })(paneles[i]);
+    }
+
+    activar(defecto || paneles[0].getAttribute('data-idioma'));
+  })();
+  </script>
+</div>

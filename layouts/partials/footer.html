@@ -1,0 +1,9 @@
+{{- /*
+  Barra inferior mínima: solo el enlace a About.
+  Sustituye al footer del tema (que traía ©, RSS y About).
+*/ -}}
+<footer class="barra-inferior">
+    {{ with .Site.GetPage "/about" }}
+    <a href="{{ .RelPermalink }}">About</a>
+    {{ end }}
+</footer>

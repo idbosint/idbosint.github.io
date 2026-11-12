@@ -1,0 +1,221 @@
+{{- /*
+  Shortcode: mapa
+  Parámetros:
+    id         (string)  id del contenedor              -> "mapa-spb"
+    tile       (string)  ruta al .pmtiles               -> "tiles/spb.pmtiles"
+    incidentes (string)  ruta al GeoJSON                -> "data/incidentes-spb.geojson"
+    lat, lon   (float)   centro inicial                 -> 59.9343 / 30.3351
+    zoom       (int)     zoom inicial                   -> 12
+    flavor     (string)  flavor de protomaps-leaflet    -> "dark" | "light"
+  Todo el JS/CSS se sirve local desde static/js/ (cero CDN).
+*/ -}}
+{{- $id := .Get "id" | default "mapa-spb" -}}
+{{- $tile := .Get "tile" | default "tiles/spb.pmtiles" -}}
+{{- $incidentes := .Get "incidentes" | default "data/incidentes-spb.geojson" -}}
+{{- $lat := .Get "lat" | default "59.9343" -}}
+{{- $lon := .Get "lon" | default "30.3351" -}}
+{{- $zoom := .Get "zoom" | default "12" -}}
+{{- $flavor := .Get "flavor" | default "dark" -}}
+
+{{- /* Etiquetas en inglés: el GeoJSON conserva alta/media/baja */ -}}
+{{- $etiquetas := dict "alta" "high" "media" "medium" "baja" "low" -}}
+
+{{- /* Contamos los incidentes en build-time (para <noscript> y el contador) */ -}}
+{{- $rutaFisica := printf "static/%s" $incidentes -}}
+{{- $total := 0 -}}
+{{- $features := slice -}}
+{{- if os.FileExists $rutaFisica -}}
+  {{- $fc := os.ReadFile $rutaFisica | transform.Unmarshal -}}
+  {{- with $fc.features -}}
+    {{- $features = . -}}
+    {{- $total = len . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*
+  Prefijo relativo a la página actual ("", "../", "../../"...).
+  Hugo reescribe los atributos href/src a rutas relativas, pero NO el
+  contenido de un <script>: las URLs que consume el JS hay que componerlas
+  a mano para que funcionen en /ipfs/CID/ o en github.io/repo/.
+*/ -}}
+{{- $ruta := .Page.RelPermalink -}}
+{{- $limpia := strings.TrimSuffix "/" (strings.TrimPrefix "/" $ruta) -}}
+{{- $niveles := 0 -}}
+{{- if $limpia }}{{ $niveles = len (split $limpia "/") }}{{ end -}}
+{{- $prefijo := strings.Repeat $niveles "../" -}}
+{{- $tileJS := printf "%s%s" $prefijo $tile -}}
+{{- $datosJS := printf "%s%s" $prefijo $incidentes -}}
+
+
+<div class="mapa-osint" data-mapa="{{ $id }}">
+  <div id="{{ $id }}" class="mapa-osint__lienzo"
+       role="application"
+       aria-label="Map of harassment incidents in Saint Petersburg"></div>
+
+  <noscript>
+    {{- /* Sin JS: se oculta el lienzo vacío y el contador, y se muestra la lista */ -}}
+    <style>
+      .mapa-osint__lienzo { display: none !important; }
+      .mapa-osint__contador { display: none !important; }
+    </style>
+    <div class="mapa-osint__noscript">
+      <p><strong>JavaScript is disabled.</strong>
+         Static list of the {{ $total }} recorded incidents:</p>
+      <ol>
+        {{- range $features }}
+        <li>
+          <strong>{{ .properties.titulo }}</strong>
+          — <time>{{ .properties.fecha }}</time>
+          — severity: <em>{{ index $etiquetas .properties.severidad | default .properties.severidad }}</em>.
+          {{ .properties.descripcion }}
+        </li>
+        {{- end }}
+      </ol>
+      <p>Coordinates: {{ $lat }}, {{ $lon }}</p>
+    </div>
+  </noscript>
+
+  <p class="mapa-osint__contador" id="{{ $id }}-contador">
+    <span class="mapa-osint__num">0</span>/{{ $total }} incidents loaded
+  </p>
+</div>
+
+{{- /*
+  Librerías locales (cero CDN). Se emiten SIEMPRE: intentar deduplicarlas con
+  .Scratch falla en `hugo server`, porque el Scratch de la página persiste
+  entre reconstrucciones y a partir del segundo render desaparecían.
+  Si una página lleva varios mapas, el navegador las cachea; ejecutarlas dos
+  veces no rompe nada.
+*/ -}}
+<link rel="stylesheet" href="{{ "js/leaflet.css" | relURL }}">
+<link rel="stylesheet" href="{{ "js/mapa.css" | relURL }}">
+<script src="{{ "js/leaflet.js" | relURL }}" defer></script>
+<script src="{{ "js/protomaps-leaflet.js" | relURL }}" defer></script>
+<script>
+(function () {
+  'use strict';
+  var cfg = {
+    id: {{ $id }},
+    tile: {{ $tileJS }},
+    datos: {{ $datosJS }},
+    lat: {{ float $lat }},
+    lon: {{ float $lon }},
+    zoom: {{ int $zoom }},
+    flavor: {{ $flavor }},
+    total: {{ $total }},
+    colores: { alta: '#d93025', media: '#f29900', baja: '#188038' },
+    // el GeoJSON conserva alta/media/baja; la UI se muestra en inglés
+    etiquetas: { alta: 'high', media: 'medium', baja: 'low' }
+  };
+
+  var mapa = null;   /* instancia de Leaflet, compartida entre iniciar() y pintar() */
+
+  function esc(s) {
+    var ent = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ent[c]; });
+  }
+
+  function mensaje(texto) {
+    var contador = document.getElementById(cfg.id + '-contador');
+    if (contador) { contador.textContent = texto; }
+  }
+
+  function pintar(datos) {
+    var capa = L.geoJSON(datos, {
+      pointToLayer: function (feature, latlng) {
+        var sev = String(feature.properties.severidad || '').toLowerCase();
+        var color = cfg.colores[sev] || '#657b83';
+        return L.circleMarker(latlng, {
+          radius: 9, color: '#ffffff', weight: 2, opacity: 0.95,
+          fillColor: color, fillOpacity: 0.9
+        });
+      },
+      onEachFeature: function (feature, marcador) {
+        var p = feature.properties || {};
+        var sev = String(p.severidad || '').toLowerCase();
+        var sevTxt = cfg.etiquetas[sev] || sev;
+        var color = cfg.colores[sev] || '#657b83';
+        var html =
+          '<div class="mapa-popup">' +
+            '<h3 class="mapa-popup__titulo">' + esc(p.titulo) + '</h3>' +
+            '<p class="mapa-popup__meta">' +
+              '<span class="mapa-popup__punto" style="background:' + color + '"></span>' +
+              '<time>' + esc(p.fecha) + '</time>' +
+              '<span class="mapa-popup__sev">' + esc(sevTxt) + '</span>' +
+            '</p>' +
+            '<p class="mapa-popup__desc">' + esc(p.descripcion) + '</p>' +
+          '</div>';
+        marcador.bindPopup(html, { maxWidth: 320, autoPanPadding: [24, 24] });
+        marcador.bindTooltip(esc(p.titulo), { direction: 'top', offset: [0, -10] });
+      }
+    }).addTo(mapa);
+
+    var n = capa.getLayers().length;
+    var contador = document.getElementById(cfg.id + '-contador');
+    if (contador) {
+      contador.innerHTML = '<span class="mapa-osint__num">' + n + '</span>/' + cfg.total +
+                           ' incidents loaded';
+    }
+  }
+
+  function fallo(err) {
+    if (window.console && console.warn) { console.warn('[mapa] ' + err); }
+    mensaje('Could not load the incidents (' + err + ')');
+  }
+
+  function cargar() {
+    if (window.fetch) {
+      fetch(cfg.datos, { cache: 'no-cache' })
+        .then(function (r) { if (!r.ok) { throw new Error('HTTP ' + r.status); } return r.json(); })
+        .then(pintar)
+        .catch(fallo);
+    } else {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', cfg.datos, true);
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try { pintar(JSON.parse(xhr.responseText)); } catch (e) { fallo(e); }
+        } else { fallo('HTTP ' + xhr.status); }
+      };
+      xhr.onerror = function () { fallo('error de red'); };
+      xhr.send();
+    }
+  }
+
+  function iniciar() {
+    var el = document.getElementById(cfg.id);
+    if (!el) { return; }
+    if (!window.L || !window.protomapsL) {
+      mensaje('Could not load the map libraries.');
+      return;
+    }
+
+    mapa = L.map(el, {
+      center: [cfg.lat, cfg.lon],
+      zoom: cfg.zoom,
+      minZoom: 8,
+      maxZoom: 15,                 /* el .pmtiles se recorta a z15 */
+      scrollWheelZoom: false,      /* no secuestrar el scroll del artículo */
+      zoomControl: true
+    });
+
+    protomapsL.leafletLayer({
+      url: cfg.tile,
+      flavor: cfg.flavor,
+      maxDataZoom: 15,
+      noWrap: true,
+      attribution: '© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> · Protomaps'
+    }).addTo(mapa);
+
+    L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(mapa);
+
+    cargar();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciar);
+  } else {
+    iniciar();
+  }
+})();
+</script>

@@ -1,0 +1,23 @@
+{{- /*
+  Vista principal = lista de posts (sustituye a la portada tipo splash).
+  No se usa .Paginator del home porque .Pages del home son las SECCIONES
+  (posts, about); paginamos explícitamente las páginas regulares.
+*/ -}}
+{{ define "main" }}
+<main>
+    {{ $posts := .Site.RegularPages.ByDate.Reverse }}
+    {{ $pag := .Paginate $posts 8 }}
+
+    {{ range $pag.Pages }}
+    {{ .Render "summary" }}
+    {{ end }}
+
+    {{ if gt $pag.TotalPages 1 }}
+    <div class="paginator">
+        {{ if $pag.HasPrev }}<a href="{{ $pag.Prev.URL }}">Previous Page</a>{{ end }}
+        <span>{{ $pag.PageNumber }} of {{ $pag.TotalPages }}</span>
+        {{ if $pag.HasNext }}<a href="{{ $pag.Next.URL }}">Next Page</a>{{ end }}
+    </div>
+    {{ end }}
+</main>
+{{ end }}

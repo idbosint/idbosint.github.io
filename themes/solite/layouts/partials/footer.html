@@ -1,0 +1,14 @@
+<footer>
+    <p>&copy; {{ now.Year }} <a href="{{ .Params.url }}">{{ .Site.Title }}</a></p>
+    {{ with .Site.GetPage "/" }}
+        {{ with .OutputFormats.Get "RSS" }}
+        <a href="{{ .RelPermalink }}" rel="feed" type="application/rss+xml">RSS</a>
+        {{ end }}
+    {{ end }}
+    {{ with .Site.GetPage "/about" }} 
+    <a href="{{ .RelPermalink }}">About</a>
+    {{ end }}
+    {{ with .Site.GetPage "/privacy" }} 
+    <a href="{{ .RelPermalink }}">Privacy Policy</a>
+    {{ end }}
+</footer>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+{{- /*
+  Override del baseof.html de Solite.
+  Motivos:
+    1) El original usa .Site.LanguageCode (deprecado en Hugo 0.158+).
+    2) Pone el mismo <title> (Site.Params.description) en todas las páginas.
+    3) No tiene un punto de extensión para scripts por página.
+  Añadimos el bloque "scripts" al final del <body>. El shortcode del mapa
+  NO lo necesita (carga sus propios <script> locales), pero queda disponible
+  para cualquier otro script específico de una página.
+*/ -}}
+<html lang="{{ site.Language.Locale | default "es-ES" }}">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        {{- if .IsHome }}
+        <title>{{ .Site.Title }}</title>
+        {{- else }}
+        <title>{{ .Title }} · {{ .Site.Title }}</title>
+        {{- end }}
+        {{ with .Description | default .Site.Params.description }}
+        <meta name="description" content="{{ . }}">
+        {{- end }}
+        {{ with .Site.Params.author }}
+        <meta name="author" content="{{ . }}">
+        {{- end }}
+        {{ $stylemain := resources.Get "scss/style.scss" | css.Sass | postCSS | minify | fingerprint }}
+        {{ $stylesyntax := resources.Get "css/syntax.css" | resources.Minify }}
+        <link rel="stylesheet" href="{{ $stylemain.RelPermalink }}" integrity="{{ $stylemain.Data.Integrity }}">
+        <link rel="stylesheet" href="{{ $stylesyntax.RelPermalink }}">
+        <link rel="stylesheet" href="{{ "js/site.css" | relURL }}">
+        <link rel="icon" type="image/svg+xml" href="{{ "favicon.svg" | relURL }}">
+        {{ with .OutputFormats.Get "RSS" }}
+        <link rel="alternate" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ $.Site.Title }}">
+        {{- end }}
+    </head>
+    <body>
+        {{ partial "header" . }}
+        {{ block "main" . }}{{ end }}
+        {{ partial "footer" . }}
+        {{ block "scripts" . }}{{ end }}
+    </body>
+</html>

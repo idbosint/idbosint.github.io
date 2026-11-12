@@ -1,0 +1,20 @@
+name: "Solite"
+license:  "MIT"
+licenselink: ""
+description: "Lightweight theme based on solarized"
+homepage: ""
+tags: 
+    - "blog"
+    - "simple"
+    - "lightweight" 
+    - "nojs"
+    - "development"
+    - "notracking"
+    - "minimalistic"
+features: 
+    - "blog"
+min_version: "0.20"
+
+author:
+    name : "Solite"
+    homepage : "https://"

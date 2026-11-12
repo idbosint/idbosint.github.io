@@ -1,0 +1,172 @@
+/*
+based on the fantastic solarized theme by ethan schoonover
+https://ethanschoonover.com/solarized/
+*/
+
+$base03:    #002b36;
+$base02:    #073642;
+$base01:    #586e75;
+$base00:    #657b83;
+$base0:     #839496;
+$base1:     #93a1a1;
+$base2:     #eee8d5;
+$base3:     #fdf6e3;
+$yellow:    #b58900;
+$orange:    #cb4b16;
+$red:       #dc322f;
+$magenta:   #d33682;
+$violet:    #6c71c4;
+$blue:      #268bd2;
+$cyan:      #2aa198;
+$green:     #859900;
+@mixin rebase($rebase03,$rebase02,$rebase01,$rebase00,$rebase0,$rebase1,$rebase2,$rebase3) {
+    background-color:$rebase02;
+    color:$rebase0;
+
+    * { color:$rebase0; }
+    h1,h2,h3,h4,h5,h6 { color:$rebase1; border-color: $rebase0; }
+    a, a:active, a:visited { color: $rebase1; }
+    hr {
+        border-top: 0;
+        border-bottom: 1px solid $rebase01;
+    }
+    body {
+        background-color: $rebase03;
+        min-width: 42ch;
+    }
+    header {
+        background-color: $rebase02;
+        z-index: 9999999;
+    }
+    footer {
+        background-color: $rebase02
+    }
+    
+    // firefox scrollbar styling
+    scrollbar-color: $rebase02 $rebase03;
+    // chrome scrollbar styling
+    ::-webkit-scrollbar {
+        color: $rebase02;
+        background: $rebase03;
+    }
+
+    // code formatting
+    pre, code {
+        background: $rebase02;
+        overflow: auto;
+    }
+}
+@mixin accentize($accent) {
+    a, a:active, a:visited, code.url { color: $accent; }
+    h1,h2,h3,h4,h5,h6 {color:$accent}
+}
+
+html, .dark { 
+    @include rebase($base03,$base02,$base01,$base00,$base0,$base1,$base2,$base3);
+    height: 100vh;
+    font-family: monospace;
+    font-size: 12pt;
+}
+
+.light { 
+    @include rebase($base3,$base2,$base1,$base0,$base00,$base01,$base02,$base03);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    align-content: space-between;
+
+    hyphens: auto;
+
+    max-width: 100ch; 
+    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 100vh;
+
+    header {
+        align-self: center;
+        font-size: 2em;
+
+        position: sticky;
+        top: 0;
+        width: 100%;
+        width: -moz-available;          /* For Mozzila */
+        width: -webkit-fill-available;  /* For Chrome */
+        width: stretch;                 /* Unprefixed */
+        display: flex;
+        justify-content: center;
+    }
+    main {
+        display: flex;
+        flex-direction: column;
+        margin-left: 2em;
+        margin-right: 2em;
+        align-self: flex-start;
+        flex: 1;
+        line-height: 1.25;
+
+        width: 100%;
+        width: -moz-available;          /* For Mozzila */
+        width: -webkit-fill-available;  /* For Chrome */
+        width: stretch;                 /* Unprefixed */
+
+        img {
+            min-width: 40px;            /* svgs are hidden in case they are the only element */
+            max-width: 100%;
+            display: block;
+            margin: auto;
+        }
+        .paginator {
+            margin: 2em;
+            align-self: center;
+        }
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+        }
+        .chroma {
+            overflow: scroll;
+            scrollbar-width: none;
+        }
+        pre {
+            padding: 1em;
+            border-radius: 5px; 
+        }
+        article {
+          header {
+            all:revert;
+          }
+
+          padding-bottom: 20px;
+        }
+        details summary {
+          cursor: pointer;
+        }
+    }
+    .no-flex-centered {
+        flex: 0;
+        align-self: center;
+        width: max-content;
+        align-items: center;
+    }
+    footer {
+        padding: 0em 1em 0em 1em;
+        align-self: stretch;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        align-items: center;
+        align-content: space-between;
+
+    //    position: sticky;
+    //    bottom: 0;
+    //    width: 100%;
+    //    width: -moz-available;          /* For Mozzila */
+    //    width: -webkit-fill-available;  /* For Chrome */
+    //    width: stretch;                 /* Unprefixed */
+    }
+}

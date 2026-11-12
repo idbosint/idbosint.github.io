@@ -1,0 +1,184 @@
+{{ define "main" }}
+<main>
+<article>
+    <h1>{{ .Title }}</h1>
+    {{ if .Date | default false }}
+    <time>{{ .Date.Format "02.01.2006" }}</time>
+    {{ end }}
+    {{ range .Params.tags }}
+    <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>
+    {{ end }}
+    
+  <div>
+    <div id="map"></div>
+
+    <details id="stats" class="stats" style="display: none;">
+      <summary style="cursor: pointer;">
+        Stats
+      </summary>
+        {{ range .Params.tracks }}
+        <div id="{{ .id }}-stats"></div>
+        {{ end }}
+    </div>
+    
+    <div id="report">
+        {{ .Content }}
+    </div>
+  </div>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+        #map {
+            display: none;
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .leaflet-container {
+          background: #05668d;
+        }
+        .leaflet-div-icon {
+          background: revert;
+          border: revert;
+        }
+  </style>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- This is not coming from cdn as the latest release has a killer bug with divIcon -->
+  {{ $gpx := resources.Get "ext/leaflet-gpx/gpx.js" | resources.Minify  }}
+  <script src="{{ $gpx.Permalink }}"> </script>
+
+  <!-- PMTiles -->
+  <script src="https://unpkg.com/protomaps-leaflet@latest/dist/protomaps-leaflet.js"></script>
+  <script src="https://unpkg.com/@protomaps/basemaps@5/dist/basemaps.js" crossorigin="anonymous"></script>
+    
+  <script>
+      const map = L.map('map');
+
+      // show map and stats only if JS is available
+      const statsRootDiv = document.getElementById('stats');
+      statsRootDiv.style = "display: inherit;"
+      const mapDiv = document.getElementById('map');
+      mapDiv.style.display = "block";
+
+      // Add PMTiles Layer
+      const flavor = basemaps.namedFlavor("light")
+      flavor.major = "#586e75"
+
+      flavor.park_b = "#b3d89c"
+      flavor.water = "#05668d"
+
+      flavor.city_label = "#002b36"
+      flavor.city_label_halo = "#fdf6e3"
+      flavor.state_label = "#002b36"
+      flavor.state_label_halo = "#fdf6e3"
+
+      flavor.address_label = "#002b36"
+      flavor.address_label_halo = "#fdf6e3"
+
+      flavor.roads_label_major = "#002b36"
+      flavor.roads_label_major_halo = "#fdf6e3"
+
+      flavor.roads_label_minor = "#002b36"
+      flavor.roads_label_minor_halo = "#fdf6e3"
+
+      const paintRules =  protomapsL.paintRules(flavor)
+      const labelRules = protomapsL.labelRules(flavor)
+ 
+      {{if not .Params.pmtiles }}
+        {{ errorf "Please provide pmtiles for %s" .Page.Path }}
+      {{ end }}
+      const layer = protomapsL.leafletLayer({
+          url:'{{ .Params.pmtiles  }}',
+          lang:"en",
+          paintRules,
+          labelRules
+        })
+      layer.addTo(map)
+
+      const startMarker = (color) => (`
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 100 50"
+     width="${100 * 0.66}" height="50">
+  <path d="M 20,0 L 100,0 L 100,50 L 20,50 L 0,25 Z"
+        fill="${color}" stroke="#ffffff"
+        stroke-width="2"/>
+        <text x="20%" y="50%"  dominant-baseline="central" fill="#ffffff" font-size="24" font-family="sans">START</text>
+</svg>
+`)
+      const finishMarker = (color) => (`
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 120 50"
+     width="${120 * 0.66}" height="50">
+  <path d="M 100,0 L 0,0 L 0,50 L 100,50 L 120,25 Z"
+        fill="${color}" stroke="#ffffff"
+        stroke-width="2"/>
+        <text x="8" y="50%" dominant-baseline="central" fill="#ffffff" font-size="24" font-family="sans">FINISH</text>
+</svg>
+`)
+
+      const tracks = [
+          {{ range .Params.tracks }}{
+            id: {{ .id }},
+            file: {{ .file }},
+            color: '{{ .color | default "#3388ff" }}',
+            weight: {{ .weight | default 5 }},
+            opacity: {{ .opacity | default 0.7 }},
+          }, 
+          {{ end }}
+      ]
+
+      const boundsPromises = tracks.map(({id, file, color, weight, opacity}) => {
+          // when loaded return bounds so that we can set the map to the bounds
+          let resolve, reject;
+          const boundsPromise = new Promise((res, rej) => {
+            resolve = res;
+            reject = rej;
+          });
+
+          const gpx = new L.GPX(`{{ $.Page.RelPermalink }}${file}`, {
+              async: true,
+              polyline_options: { color, weight, opacity },
+              markers: {
+                  startIcon: L.divIcon({html: startMarker(color), iconAnchor : [-12, 32]}),
+                  endIcon:  L.divIcon({html: finishMarker(color), iconAnchor : [72, 32]})
+              }
+          }).addTo(map);
+
+          gpx.on('loaded', function() {
+              const bounds = gpx.getBounds();
+              resolve([bounds._southWest, bounds._northEast]);
+          });
+
+          // set stats div
+          gpx.on('loaded', function(e) {
+             const stats = e.target;
+
+             const trackName = stats.get_name();
+             const averageSpeed = stats.get_total_speed().toFixed(2);
+             const movingSpeed = stats.get_moving_speed().toFixed(2);
+             const maxDistance = (stats.get_distance() / 1000.0).toFixed(2);
+             const timeInMotion = (stats.get_moving_time() / 1000.0 / 60.0 / 60.0).toFixed(2);
+             const totalTime = (stats.get_total_time() / 1000.0 / 60.0 / 60.0).toFixed(2);
+
+             const statsDiv = document.getElementById(id + '-stats');
+             statsDiv.innerHTML = 
+                     `<h4><strong style="background: ${color}; color: #fff;">` + trackName + '</strong></h4>' + 
+                     '<p><strong>Avg. Speed:</strong> ' + averageSpeed + ' km/h in ' + totalTime + ' h</p>' + 
+                     '<p><strong>Mov. Speed:</strong> ' + movingSpeed + ' km/h in ' + timeInMotion + ' h</p>' + 
+                     '<p><strong>Dist.:</strong> ' + maxDistance + ' km</p>';
+         });
+         return boundsPromise;
+      });
+
+      Promise.all(boundsPromises).then(bounds => {
+        map.fitBounds(L.latLngBounds(bounds.flat()));
+      });
+  </script>
+</article>
+</main>
+{{ end }}

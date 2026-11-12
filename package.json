@@ -1,0 +1,17 @@
+{
+  "name": "proyecto-osint",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Blog estático Hugo + Leaflet + PMTiles sobre incidentes en San Petersburgo",
+  "scripts": {
+    "postcss": "postcss",
+    "vendor": "bash scripts/vendor-assets.sh"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "postcss-cli": "^11.0.0",
+    "leaflet": "1.9.4",
+    "protomaps-leaflet": "5.1.0"
+  }
+}

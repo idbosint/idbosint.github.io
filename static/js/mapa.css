@@ -1,0 +1,134 @@
+/* ---------------------------------------------------------------------------
+   mapa.css — estilos propios del mapa (se carga solo en páginas que usan el
+   shortcode "mapa"). Complementa a leaflet.css, que va dentro de static/js/.
+   --------------------------------------------------------------------------- */
+
+.mapa-osint {
+  margin: 1.5rem 0 2rem;
+}
+
+.mapa-osint__lienzo {
+  width: 100%;
+  height: 62vh;
+  min-height: 380px;
+  border: 1px solid #586e75;
+  border-radius: 6px;
+  background: #002b36;
+}
+
+/* El <header> del tema Solite es sticky con z-index 9999999.
+   Un z-index propio en el contenedor de Leaflet evita que los paneles
+   (controls, popups) se pinten por encima de la cabecera. */
+.leaflet-container {
+  z-index: 0;
+  font-family: monospace;
+}
+
+/* El tema aplica `* { color: ... }`; recuperamos contraste en controles */
+.leaflet-bar a,
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+  color: #002b36;
+  background-color: #fdf6e3;
+}
+.leaflet-bar a:hover {
+  background-color: #eee8d5;
+}
+
+.leaflet-control-scale-line {
+  color: #93a1a1;
+  border-color: #93a1a1;
+  background: rgba(0, 43, 54, 0.6);
+}
+
+/* --- Popups ------------------------------------------------------------- */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: #fdf6e3;
+  color: #002b36;
+  border-radius: 6px;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px;
+  line-height: 1.4;
+  font-size: 0.85rem;
+}
+
+.mapa-popup,
+.mapa-popup * {
+  color: #073642;
+}
+
+.mapa-popup__titulo {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  line-height: 1.25;
+  color: #002b36 !important;
+}
+
+.mapa-popup__meta {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mapa-popup__punto {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.mapa-popup__sev {
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 0 0.25rem;
+}
+
+.mapa-popup__desc {
+  margin: 0;
+}
+
+/* --- Contador ----------------------------------------------------------- */
+.mapa-osint__contador {
+  margin: 0.5rem 0 0;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  opacity: 0.85;
+  letter-spacing: 0.02em;
+}
+
+.mapa-osint__num {
+  font-weight: bold;
+}
+
+/* --- Sin JavaScript ----------------------------------------------------- */
+.mapa-osint__noscript {
+  margin-top: 0.75rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px dashed #586e75;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.mapa-osint__noscript ol {
+  margin: 0.5rem 0 0;
+  padding-left: 1.4rem;
+}
+
+.mapa-osint__noscript li {
+  margin-bottom: 0.6rem;
+}
+
+@media (max-width: 600px) {
+  .mapa-osint__lienzo {
+    height: 58vh;
+  }
+}
