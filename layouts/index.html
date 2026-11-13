@@ -2,7 +2,7 @@
 {{ define "main" }}
 <main>
     <div class="flex-column">
-        {{ with .Site.GetPage "/posts" }}<h1 class="seccion-titulo">{{ .Title }}</h1>{{ end }}
+        {{ with .Site.GetPage "/posts" }}<h1>{{ .Title }}</h1>{{ end }}
     </div>
 
     {{ $posts := .Site.RegularPages.ByDate.Reverse }}
