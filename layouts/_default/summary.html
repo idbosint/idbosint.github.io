@@ -1,10 +1,3 @@
-{{- /*
-  Resumen de post para las listas (home y /posts/).
-  Sobrescribe el del tema para usar .RelPermalink en lugar de .Permalink:
-  con .Permalink, en `hugo server` los enlaces salen absolutos
-  (//localhost:1313/...) y se rompen si entras por 127.0.0.1 o por la IP de
-  la red local — lo mismo que pasaba con el CSS del tema.
-*/ -}}
 <article>
 	<h1><a href="{{ .RelPermalink }}">{{ .Title }}</a></h1>
 	<time>{{ .Date.Format "02.01.2006" }}</time>

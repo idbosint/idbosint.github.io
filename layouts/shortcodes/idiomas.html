@@ -1,13 +1,3 @@
-{{- /*
-  Shortcode contenedor: pestañas de idioma para UN post.
-    {{< idiomas defecto="es" >}}
-      {{< idioma es "Español" >}}...{{< /idioma >}}
-      {{< idioma ru "Русский" >}}...{{< /idioma >}}
-    {{< /idiomas >}}
-  Todo el texto va en el HTML generado (nada de APIs de traducción).
-  Sin JS se ven los dos bloques, cada uno con su título; con JS se convierten
-  en pestañas y solo queda visible el idioma por defecto.
-*/ -}}
 {{- $defecto := .Get "defecto" | default "es" -}}
 <div class="idiomas" data-defecto="{{ $defecto }}">
   <div class="idiomas__tabs" role="tablist" aria-label="Idioma del contenido"></div>

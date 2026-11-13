@@ -32,12 +32,7 @@
   {{- end -}}
 {{- end -}}
 
-{{- /*
-  Prefijo relativo a la página actual ("", "../", "../../"...).
-  Hugo reescribe los atributos href/src a rutas relativas, pero NO el
-  contenido de un <script>: las URLs que consume el JS hay que componerlas
-  a mano para que funcionen en /ipfs/CID/ o en github.io/repo/.
-*/ -}}
+
 {{- $ruta := .Page.RelPermalink -}}
 {{- $limpia := strings.TrimSuffix "/" (strings.TrimPrefix "/" $ruta) -}}
 {{- $niveles := 0 -}}

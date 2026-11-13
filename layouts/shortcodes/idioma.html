@@ -1,9 +1,4 @@
-{{- /*
-  Shortcode interior: un bloque de idioma.
-    {{< idioma es "Español" >}} ...markdown... {{< /idioma >}}
-  El contenido se convierte a HTML con markdownify (los shortcodes anidados con
-  `<>` reciben el texto en crudo).
-*/ -}}
+
 {{- $codigo := .Get 0 | default "es" -}}
 {{- $etiqueta := .Get 1 | default $codigo -}}
 <section class="idioma" id="idioma-{{ $codigo }}" data-idioma="{{ $codigo }}" data-etiqueta="{{ $etiqueta }}" lang="{{ $codigo }}">
