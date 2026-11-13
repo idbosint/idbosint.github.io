@@ -3,7 +3,7 @@ relativeURLs = true
 canonifyURLs = false
 
 locale = "en-GB"
-title = "OSINT Investigations"
+title = "Idbosint"
 theme = "solite"
 
 enableRobotsTXT = true
