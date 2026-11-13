@@ -1,8 +1,4 @@
-{{- /*
-  Vista principal = lista de posts (sustituye a la portada tipo splash).
-  No se usa .Paginator del home porque .Pages del home son las SECCIONES
-  (posts, about); paginamos explícitamente las páginas regulares.
-*/ -}}
+
 {{ define "main" }}
 <main>
     {{ $posts := .Site.RegularPages.ByDate.Reverse }}

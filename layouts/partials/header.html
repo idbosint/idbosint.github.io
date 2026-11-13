@@ -1,8 +1,4 @@
-{{- /*
-  Header mínimo. El del tema usa .Site.BaseURL, que en `hugo server` es
-  "http://localhost:1313/": desde el móvil ese enlace apunta al localhost del
-  propio móvil. Con relLangURL "/" Hugo lo reescribe a ruta relativa.
-*/ -}}
+
 <header>
 	<a href="{{ "/" | relLangURL }}">{{ .Site.Title }}</a>
 </header>

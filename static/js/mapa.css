@@ -1,7 +1,4 @@
-/* ---------------------------------------------------------------------------
-   mapa.css — estilos propios del mapa (se carga solo en páginas que usan el
-   shortcode "mapa"). Complementa a leaflet.css, que va dentro de static/js/.
-   --------------------------------------------------------------------------- */
+
 
 .mapa-osint {
   margin: 1.5rem 0 2rem;
@@ -16,15 +13,11 @@
   background: #002b36;
 }
 
-/* El <header> del tema Solite es sticky con z-index 9999999.
-   Un z-index propio en el contenedor de Leaflet evita que los paneles
-   (controls, popups) se pinten por encima de la cabecera. */
 .leaflet-container {
   z-index: 0;
   font-family: monospace;
 }
 
-/* El tema aplica `* { color: ... }`; recuperamos contraste en controles */
 .leaflet-bar a,
 .leaflet-bar a:hover,
 .leaflet-bar a:focus {
@@ -41,7 +34,6 @@
   background: rgba(0, 43, 54, 0.6);
 }
 
-/* --- Popups ------------------------------------------------------------- */
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
   background: #fdf6e3;
@@ -96,7 +88,6 @@
   margin: 0;
 }
 
-/* --- Contador ----------------------------------------------------------- */
 .mapa-osint__contador {
   margin: 0.5rem 0 0;
   font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -109,7 +100,6 @@
   font-weight: bold;
 }
 
-/* --- Sin JavaScript ----------------------------------------------------- */
 .mapa-osint__noscript {
   margin-top: 0.75rem;
   padding: 0.9rem 1.1rem;

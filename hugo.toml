@@ -1,6 +1,3 @@
-# ---------------------------------------------------------------------------
-# Hugo — configuración portable (raíz de dominio, subcarpeta o /ipfs/CID/)
-# ---------------------------------------------------------------------------
 baseURL = "/"
 relativeURLs = true
 canonifyURLs = false
@@ -10,7 +7,6 @@ title = "OSINT Investigations"
 theme = "solite"
 
 enableRobotsTXT = true
-# El tema usa fingerprint + minify: dejamos que Hugo gestione la caché
 [build]
   writeStats = false
 
@@ -20,10 +16,8 @@ enableRobotsTXT = true
 [params]
   description = "Citizen log of harassment incidents in Saint Petersburg, Russia."
   author = "OSINT SPb"
-  # El tema pinta el <header> con el título del sitio
   url = ""
 
-# Necesario para que el shortcode del mapa pueda inyectar HTML (SVG/popups)
 [markup]
   [markup.goldmark.renderer]
     unsafe = true

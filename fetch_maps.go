@@ -1,15 +1,5 @@
-// fetch_maps.go — descarga recortes de tiles vectoriales en formato PMTiles.
-//
-// Uso:
-//   go run fetch_maps.go            # lee ./mapas.json y genera todos los mapas
-//   go run fetch_maps.go --dry-run  # solo muestra los comandos
-//
-// Lee mapas.json, y por cada entrada ejecuta:
-//
-//	pmtiles extract <fuente> <salida> --bbox=<minLon,minLat,maxLon,maxLat> --maxzoom=<n>
-//
-// El archivo resultante se sirve tal cual desde static/tiles/ (sin CDN, sin
-// servidor de tiles: el navegador hace peticiones Range al .pmtiles).
+
+
 package main
 
 import (
@@ -30,7 +20,7 @@ type Config struct {
 
 type Mapa struct {
 	Nombre string    `json:"nombre"`
-	BBox   []float64 `json:"bbox"` // [minLon, minLat, maxLon, maxLat]
+	BBox   []float64 `json:"bbox"`
 	Salida string    `json:"salida"`
 }
 

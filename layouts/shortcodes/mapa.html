@@ -1,14 +1,3 @@
-{{- /*
-  Shortcode: mapa
-  Parámetros:
-    id         (string)  id del contenedor              -> "mapa-spb"
-    tile       (string)  ruta al .pmtiles               -> "tiles/spb.pmtiles"
-    incidentes (string)  ruta al GeoJSON                -> "data/incidentes-spb.geojson"
-    lat, lon   (float)   centro inicial                 -> 59.9343 / 30.3351
-    zoom       (int)     zoom inicial                   -> 12
-    flavor     (string)  flavor de protomaps-leaflet    -> "dark" | "light"
-  Todo el JS/CSS se sirve local desde static/js/ (cero CDN).
-*/ -}}
 {{- $id := .Get "id" | default "mapa-spb" -}}
 {{- $tile := .Get "tile" | default "tiles/spb.pmtiles" -}}
 {{- $incidentes := .Get "incidentes" | default "data/incidentes-spb.geojson" -}}
@@ -17,10 +6,8 @@
 {{- $zoom := .Get "zoom" | default "12" -}}
 {{- $flavor := .Get "flavor" | default "dark" -}}
 
-{{- /* Etiquetas en inglés: el GeoJSON conserva alta/media/baja */ -}}
 {{- $etiquetas := dict "alta" "high" "media" "medium" "baja" "low" -}}
 
-{{- /* Contamos los incidentes en build-time (para <noscript> y el contador) */ -}}
 {{- $rutaFisica := printf "static/%s" $incidentes -}}
 {{- $total := 0 -}}
 {{- $features := slice -}}
@@ -32,7 +19,6 @@
   {{- end -}}
 {{- end -}}
 
-
 {{- $ruta := .Page.RelPermalink -}}
 {{- $limpia := strings.TrimSuffix "/" (strings.TrimPrefix "/" $ruta) -}}
 {{- $niveles := 0 -}}
@@ -41,14 +27,12 @@
 {{- $tileJS := printf "%s%s" $prefijo $tile -}}
 {{- $datosJS := printf "%s%s" $prefijo $incidentes -}}
 
-
 <div class="mapa-osint" data-mapa="{{ $id }}">
   <div id="{{ $id }}" class="mapa-osint__lienzo"
        role="application"
        aria-label="Map of harassment incidents in Saint Petersburg"></div>
 
   <noscript>
-    {{- /* Sin JS: se oculta el lienzo vacío y el contador, y se muestra la lista */ -}}
     <style>
       .mapa-osint__lienzo { display: none !important; }
       .mapa-osint__contador { display: none !important; }
@@ -75,13 +59,6 @@
   </p>
 </div>
 
-{{- /*
-  Librerías locales (cero CDN). Se emiten SIEMPRE: intentar deduplicarlas con
-  .Scratch falla en `hugo server`, porque el Scratch de la página persiste
-  entre reconstrucciones y a partir del segundo render desaparecían.
-  Si una página lleva varios mapas, el navegador las cachea; ejecutarlas dos
-  veces no rompe nada.
-*/ -}}
 <link rel="stylesheet" href="{{ "js/leaflet.css" | relURL }}">
 <link rel="stylesheet" href="{{ "js/mapa.css" | relURL }}">
 <script src="{{ "js/leaflet.js" | relURL }}" defer></script>
@@ -99,11 +76,10 @@
     flavor: {{ $flavor }},
     total: {{ $total }},
     colores: { alta: '#d93025', media: '#f29900', baja: '#188038' },
-    // el GeoJSON conserva alta/media/baja; la UI se muestra en inglés
     etiquetas: { alta: 'high', media: 'medium', baja: 'low' }
   };
 
-  var mapa = null;   /* instancia de Leaflet, compartida entre iniciar() y pintar() */
+  var mapa = null;
 
   function esc(s) {
     var ent = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -189,8 +165,8 @@
       center: [cfg.lat, cfg.lon],
       zoom: cfg.zoom,
       minZoom: 8,
-      maxZoom: 15,                 /* el .pmtiles se recorta a z15 */
-      scrollWheelZoom: false,      /* no secuestrar el scroll del artículo */
+      maxZoom: 15,
+      scrollWheelZoom: false,
       zoomControl: true
     });
 

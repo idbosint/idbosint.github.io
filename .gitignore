@@ -1,26 +1,19 @@
-# Hugo
 public/
 resources/
 .hugo_build.lock
 .cache/
 
-# Dependencias (se reinstalan con `make setup`)
 node_modules/
 
-# Sistema y entorno
 .DS_Store
 Thumbs.db
 *.log
 .env
 .env.*
 
-# Patrones personales para scripts/auditoria.sh
 .auditoria.local
 
-# Editores
 .vscode/
 .idea/
 *.swp
 
-# NOTA: static/tiles/*.pmtiles SÍ se versiona (38 MB): es el mapa que
-# consume el sitio y GitHub Pages no puede generarlo. Límite: 100 MB/archivo.

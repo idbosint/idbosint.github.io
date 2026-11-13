@@ -1,7 +1,4 @@
-{{- /*
-  RSS 2.0 propio: el rss.xml del tema usa .Site.Author, eliminado en Hugo
-  moderno (v0.146+), y rompía el build. Este sobrescribe el del tema.
-*/ -}}
+
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>

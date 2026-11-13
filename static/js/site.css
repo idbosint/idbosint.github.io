@@ -1,15 +1,5 @@
-/* ---------------------------------------------------------------------------
-   site.css — ajustes propios sobre el tema Solite.
-   Se enlaza desde layouts/_default/baseof.html después del CSS del tema.
 
-   OJO con la especificidad: el SCSS del tema anida las reglas dentro de
-   `html, .dark { body { ... } }`, así que en el CSS compilado aparecen como
-   `html body`, `body header`, `body main` (especificidad 0,0,2). Un simple
-   `body { ... }` NO las sobrescribe: hay que usar el mismo prefijo.
-   --------------------------------------------------------------------------- */
 
-/* El tema fija html body { min-width: 42ch }: en pantallas estrechas el
-   contenido se sale del viewport y aparece scroll horizontal. */
 @media (max-width: 700px) {
   html body {
     min-width: 0;
@@ -30,24 +20,15 @@
   }
 }
 
-/* URLs largas en el cuerpo del artículo no deben desbordar */
 body article a {
   overflow-wrap: anywhere;
 }
 
-
-
-/* --- Ancho del contenido -------------------------------------------------
-   El tema pone `body main { width: 100%; margin: 0 2em }`: al 100 % de un
-   body de 100 ch, el main queda 2em más ancho y desplazado a la derecha
-   (el contenido "no centrado"). Con width:auto + align-self:stretch el
-   flex lo ajusta al ancho disponible respetando los márgenes. */
 html body main {
   width: auto;
   align-self: stretch;
 }
 
-/* --- Barra inferior: solo el enlace a About ----------------------------- */
 .barra-inferior {
   position: fixed;
   left: 0;
@@ -63,15 +44,12 @@ html body main {
   letter-spacing: 0.04em;
 }
 
-/* Altura estable del panel: siempre la ventana menos la franja inferior
-   (donde vive la barra con About). Si el contenido es más largo, crece. */
 html body {
   min-height: calc(100vh - 2.6rem);
   box-sizing: border-box;
   padding-bottom: 2.6rem;
 }
 
-/* --- Pestañas de idioma (shortcodes idiomas/idioma) ---------------------- */
 .idiomas {
   margin: 1.2rem 0 2rem;
 }
